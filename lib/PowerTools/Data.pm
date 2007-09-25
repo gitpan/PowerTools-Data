@@ -31,7 +31,7 @@ our @EXPORT = qw(
 	connect disconnect status execute count
 );
 
-our $VERSION = '0.01';
+our $VERSION = '0.02';
 
 
 # Below is stub documentation for your module. You'd better edit it!
@@ -163,6 +163,8 @@ sub connect {
 	my $db_ac = $self->{commit} || 1;
 	$self->{_COMMIT} = $db_ac;
 
+	my $db_log = $self->{log} || 0;
+
 	my $ini = $self->{ini};
 
 	if( ($ini) && (-e $ini) ) {
@@ -179,6 +181,8 @@ sub connect {
 		$db_re = $conf->{mysql}->{errors} || 1;
 		$db_ac = $conf->{mysql}->{commit} || 1;
 		$self->{_COMMIT} = $db_ac;
+
+		$db_log = $conf->{mysql}->{log} || 0;
 	} else {
 		_error("Can't open INI file");
 	}
@@ -217,7 +221,7 @@ sub execute {
 			$self->{_QUERY} = $self->{_CONN}->prepare($query) or die $DBI::lasth->errstr;
 			$self->{_QUERY}->execute() or die $DBI::lasth->errstr;
 			$self->{_QUERY_RESULT} = $self->{_QUERY}->fetchall_arrayref({});
-			$self->{_RECORD_COUNT} = $self->{_QUERY}->rows - 1;
+			$self->{_RECORD_COUNT} = $self->{_QUERY}->rows;
 			$self->{_QUERY}->finish();
 			$self->{_QUERY_STATUS} = 1;
 
@@ -227,6 +231,8 @@ sub execute {
 			$self->{_RECORD_COUNT} = $self->{_QUERY};
 			$self->{_LAST_ID} = $self->{_CONN}->{'mysql_insertid'};
 			$self->{_QUERY_STATUS} = 1;
+
+			if($self->{log} eq '1') { _log($self->{_QUERY}."-".$DBI::lasth->errstr." - ".$self->{_LAST_ID}); }
 
 		} elsif($Q eq 'UPDATE') {
 
@@ -353,6 +359,14 @@ sub _error {
 	my $self = shift;
 	my $t = $_[0];
 	return $t;
+}
+
+sub _log {
+	my $self = shift;
+	my $txt = $_[0];
+	open(LOG,">>c:\\powertools_data.log");
+	print LOG $txt,"\n";
+	close(LOG);
 }
 
 1;
