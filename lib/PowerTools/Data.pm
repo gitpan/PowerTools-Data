@@ -31,7 +31,7 @@ our @EXPORT = qw(
 	connect disconnect status execute count
 );
 
-our $VERSION = '0.02';
+our $VERSION = '0.03';
 
 
 # Below is stub documentation for your module. You'd better edit it!
@@ -231,8 +231,6 @@ sub execute {
 			$self->{_RECORD_COUNT} = $self->{_QUERY};
 			$self->{_LAST_ID} = $self->{_CONN}->{'mysql_insertid'};
 			$self->{_QUERY_STATUS} = 1;
-
-			if($self->{log} eq '1') { _log($self->{_QUERY}."-".$DBI::lasth->errstr." - ".$self->{_LAST_ID}); }
 
 		} elsif($Q eq 'UPDATE') {
 
