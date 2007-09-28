@@ -31,7 +31,7 @@ our @EXPORT = qw(
 	connect disconnect status execute count
 );
 
-our $VERSION = '0.03';
+our $VERSION = '0.04';
 
 
 # Below is stub documentation for your module. You'd better edit it!
